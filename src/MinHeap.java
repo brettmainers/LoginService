@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 public class MinHeap {
 
@@ -35,7 +36,7 @@ public class MinHeap {
         return heap[getLeftChildIndex(index)];
     }
 
-    private int getRighttChild (int index) {
+    private int getRightChild (int index) {
         return heap[getRightChildIndex(index)];
     }
 
@@ -43,16 +44,65 @@ public class MinHeap {
         return heap[getParentIndex(index)];
     }
 
-    private void swap(int indexOne, int indexTwo) {
-        int temp = heap[indexOne];
-        heap[indexOne] = heap[indexTwo];
-        heap[indexTwo] = temp;
+    private void swap(int one, int two) {
+        int temp = heap[one];
+        heap[one] = heap[two];
+        heap[two] = temp;
     }
 
-    private void expand() {
+    private void checkCapacity() {
         if (size == capacity) {
             heap = Arrays.copyOf(heap, capacity * 2);
             capacity *= 2;
+        }
+    }
+
+    public int peek() {
+        if (size == 0) {
+            throw new NoSuchElementException("Your heap is empty.");
+        }
+        return heap[0];
+    }
+
+    public int poll() {
+        if (size ==0) {
+            throw new NoSuchElementException("Your heap is empty.");
+        }
+            int head = heap[0];
+            heap[0] = heap[size -1];
+            size--;
+            heapifyDown();
+            return head;
+        }
+
+    public void add(int val) {
+        checkCapacity();
+        heap[size] = val;
+        size++;
+        heapifyUp();
+    }
+
+    public void heapifyUp() {
+        int index = size - 1;
+        while (hasParent(index) && getParent(index) > heap[index]) {
+            swap(getParentIndex(index), index);
+            index = getParentIndex(index);
+        }
+    }
+
+    public void heapifyDown() {
+        int index = 0;
+        while (hasLeftChild(index)) {
+            int smallerChild = getLeftChild(index);
+            if (hasRightChild(index) && getRightChild(index) < getLeftChild(index)) {
+                smallerChild = getRightChild(index);
+            }
+            if (heap[index] < smallerChild) {
+                break;
+            } else {
+                swap(index, smallerChild);
+            }
+            index = smallerChild;
         }
     }
 }
